@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk Audio Converter</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0d0221;
+            color: #05d9e8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-shadow: 0 0 5px #05d9e8;
+        }
+        h1 {
+            color: #ff2a6d;
+            text-align: center;
+            text-shadow: 0 0 10px #ff2a6d;
+        }
+        .option {
+            background-color: rgba(5, 2, 33, 0.7);
+            border: 1px solid #d300c5;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px #d300c5;
+        }
+        button {
+            background-color: transparent;
+            color: #05d9e8;
+            border: 1px solid #05d9e8;
+            padding: 10px 15px;
+            margin: 10px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 5px #05d9e8;
+            box-shadow: 0 0 10px #05d9e8;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #05d9e8;
+            color: #0d0221;
+            text-shadow: none;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #result {
+            width: 100%;
+            min-height: 150px;
+            background-color: rgba(5, 2, 33, 0.7);
+            border: 1px solid #ff2a6d;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px #ff2a6d;
+            font-family: 'Courier New', monospace;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: transparent;
+            color: #05d9e8;
+            border: 1px solid #05d9e8;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+            text-shadow: 0 0 5px #05d9e8;
+            box-shadow: 0 0 10px #05d9e8;
+        }
+        .file-label:hover {
+            background-color: #05d9e8;
+            color: #0d0221;
+            text-shadow: none;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .status {
+            color: #ff2a6d;
+            font-style: italic;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>CYBERPUNK AUDIO CONVERTER</h1>
+    
+    <div class="option">
+        <h2>UPLOAD AUDIO FILE</h2>
+        <label for="audioUpload" class="file-label">SELECT FILE</label>
+        <input type="file" id="audioUpload" accept="audio/*">
+        <div id="uploadStatus" class="status"></div>
+    </div>
+    
+    <div class="option">
+        <h2>LIVE RECORDING</h2>
+        <button id="start">START RECORDING</button>
+        <button id="stop" disabled>STOP RECORDING</button>
+        <div id="recordStatus" class="status"></div>
+    </div>
+    
+    <h2>CONVERTED TEXT:</h2>
+    <textarea id="result" rows="8"></textarea>
+
+    <script>
+        // Elements
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+        const resultElement = document.getElementById('result');
+        const audioUpload = document.getElementById('audioUpload');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const recordStatus = document.getElementById('recordStatus');
+        
+        // Speech recognition setup
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = window.navigator.language;
+        recognition.interimResults = true;
+        recognition.continuous = true;
+        
+        // Event listeners for buttons
+        startButton.addEventListener('click', () => {
+            recognition.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            recordStatus.textContent = "Recording... Speak now";
+            resultElement.value = "";
+        });
+        
+        stopButton.addEventListener('click', () => {
+            recognition.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            recordStatus.textContent = "Recording stopped";
+        });
+        
+        // Handle recognition results
+        recognition.addEventListener('result', (event) => {
+            const result = event.results[event.results.length - 1][0].transcript;
+            resultElement.value = result;
+        });
+        
+        recognition.addEventListener('error', (event) => {
+            if (event.error !== 'no-speech') {
+                resultElement.value = "Error: " + event.error;
+            }
+        });
+        
+        // File upload handler
+        audioUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            uploadStatus.textContent = "Processing audio file...";
+            resultElement.value = "Converting audio to text...";
+            
+            // Create audio element
+            const audio = new Audio(URL.createObjectURL(file));
+            
+            // Start recognition when audio plays
+            audio.onplay = () => {
+                recognition.start();
+                uploadStatus.textContent = "Listening...";
+            };
+            
+            // Stop recognition when audio ends
+            audio.onended = () => {
+                recognition.stop();
+                uploadStatus.textContent = "Conversion complete";
+            };
+            
+            // Play the audio
+            audio.play().catch(error => {
+                resultElement.value = "Error playing audio: " + error.message;
+                uploadStatus.textContent = "Error";
+            });
+        });
+    </script>
+</body>
+</html>
