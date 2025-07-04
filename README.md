@@ -3,12 +3,26 @@
 Built by Team It’s Giving Jedi
 AI for Good – Trust & Safety Track
 
+Track -Fullstackdevelopment 
+
 ## 🌐 Overview
 In the age of AI-generated misinformation, distinguishing truth from manipulation is harder than ever. Whether it's a deepfake video, a viral meme, or a politically biased post — digital content is no longer what it seems.
 
 OBSCURA is a cutting-edge AI platform designed to analyze and expose visual misinformation, with a focus on deepfake detection, emotional manipulation, and psychological framing.
 
 Upload an image or video — OBSCURA does the rest.
+
+Problem Statement:
+In today’s digital world, we’re constantly exposed to content designed to manipulate us — not inform us.
+From AI-generated articles and deepfake videos to emotionally charged tweets and biased headlines, reality is being distorted in subtle, powerful ways.
+This manipulation isn’t always obvious — it uses guilt, fear, emotional framing, and confirmation bias to shape how we think and feel.
+As a result, people are unknowingly trapped in digital echo chambers that reinforce beliefs instead of challenging them.
+We’re not just dealing with misinformation — we’re dealing with psychological influence at scale.
+Fact-checkers and moderation tools focus on what’s false, but they don’t show users how they’re being influenced.
+There’s no accessible, interactive platform that breaks down the hidden emotional and cognitive tactics used in everyday content.
+This leads to a growing crisis of trust, confusion, and manipulation — especially for those without technical expertise.
+People need more than truth — they need clarity, awareness, and defense against manipulation.
+Obscura is our solution: an AI-powered system that reveals the hidden layers of distortion in text, media, and video — and helps users see with open eyes.
 
 ## 🎯 What It Does
 🔍 Detects deepfake images and videos
@@ -29,6 +43,12 @@ Lighting anomalies
 Compression artifacts
 
 Frame-by-frame manipulation in videos
+
+Challenges/bounties done:
+1.dark theme
+2.easter egg--light saber (loading page)
+3.recreated popular scenes 
+4.3d model -in homepage and also in deepfake scanner 
 
 ## 📁 Project Structure
 bash
@@ -119,6 +139,19 @@ CSS Transforms
 ## 🤝 Contributing
 We welcome contributions of all kinds!
 Open an issue or submit a pull request for improvements, bug fixes, or feature requests.
+
+💼 Obscura Business Model
+🔹 1. Freemium Tier (For Individuals)
+✅ Target Users: Students, curious individuals, casual users
+✅ Features:
+
+Limited daily scans of text/images
+
+Basic TruthLens analysis (manipulation score, emotional bias, etc.)
+
+Access to community scan history and education section
+
+✅ Purpose: Raise awareness, build user trust, gather feedback
 
 ## 🙌 Acknowledgments
 Inspired by real-world challenges in digital trust & safety
