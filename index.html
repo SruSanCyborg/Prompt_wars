@@ -3,12 +3,1948 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Obscura - The Forbidden Archive</title>
+    <meta name="description" content="Enter the forbidden knowledge. Reality is not what it seems.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-screen h1 {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 200;
+            color: #fff;
+            font-size: 26px;
+            margin: 40px 0 15px;
+        }
+
+        .loading-screen p {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 200;
+            color: #999;
+            font-size: 16px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .loading-screen p.small {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin: 0 0 40px;
+            font-style: normal;
+        }
+
+        .loading-screen p a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #999;
+        }
+
+        .loading-screen p a:hover {
+            color: #608A00;
+        }
+
+        #loader {
+            width: 80px;
+            height: 40px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .lightsaber {
+            position: absolute;
+            width: 4px;
+            height: 12px;
+            background-color: #666;
+            border-radius: 1px;
+            bottom: 0;
+        }
+
+        .lightsaber.ls-left {
+            left: 0;
+        }
+
+        .lightsaber.ls-right {
+            right: 0;
+        }
+
+        .lightsaber:before {
+            position: absolute;
+            content: ' ';
+            display: block;
+            width: 2px;
+            height: 25px;
+            max-height: 1px;
+            left: 1px;
+            top: 1px;
+            background-color: #fff;
+            border-radius: 1px;
+            -webkit-transform: rotateZ(180deg);
+            transform: rotateZ(180deg);
+            -webkit-transform-origin: center top;
+            -ms-transform-origin: center top;
+            transform-origin: center top;
+        }
+
+        .lightsaber:after {
+            position: absolute;
+            content: ' ';
+            display: block;
+            width: 2px;
+            height: 2px;
+            left: 1px;
+            top: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+
+        .ls-particles {
+            position: absolute;
+            left: 42px;
+            top: 10px;
+            width: 1px;
+            height: 5px;
+            background-color: rgb(51, 51, 51, 0);
+            -webkit-transform: rotateZ(0deg);
+            transform: rotateZ(0deg);
+        }
+
+        .lightsaber.ls-green:before {
+            -webkit-animation: showlightgreen 2s ease-in-out infinite 1s; 
+            animation: showlightgreen 2s ease-in-out infinite 1s;
+        }
+
+        .lightsaber.ls-red:before {
+            -webkit-animation: showlightred 2s ease-in-out infinite 1s; 
+            animation: showlightred 2s ease-in-out infinite 1s;
+        }
+
+        .lightsaber.ls-left {
+            -webkit-animation: fightleft 2s ease-in-out infinite 1s; 
+            animation: fightleft 2s ease-in-out infinite 1s;
+        }
+
+        .lightsaber.ls-right {
+            -webkit-animation: fightright 2s ease-in-out infinite 1s; 
+            animation: fightright 2s ease-in-out infinite 1s;
+        }
+
+        .ls-particles.ls-part-1 {
+            -webkit-animation: particles1 2s ease-out infinite 1s; 
+            animation: particles1 2s ease-out infinite 1s;
+        }
+
+        .ls-particles.ls-part-2 {
+            -webkit-animation: particles2 2s ease-out infinite 1s; 
+            animation: particles2 2s ease-out infinite 1s;
+        }
+
+        .ls-particles.ls-part-3 {
+            -webkit-animation: particles3 2s ease-out infinite 1s; 
+            animation: particles3 2s ease-out infinite 1s;
+        }
+
+        .ls-particles.ls-part-4 {
+            -webkit-animation: particles4 2s ease-out infinite 1s; 
+            animation: particles4 2s ease-out infinite 1s;
+        }
+
+        .ls-particles.ls-part-5 {
+            -webkit-animation: particles5 2s ease-out infinite 1s; 
+            animation: particles5 2s ease-out infinite 1s;
+        }
+
+        /* Loading Screen Animations */
+        @keyframes showlightgreen {
+            0% { max-height: 0; box-shadow: 0 0 0 0 #87c054; }
+            5% { box-shadow: 0 0 4px 2px #87c054; }
+            10% { max-height: 22px; }
+            80% { max-height: 22px; }
+            85% { box-shadow: 0 0 4px 2px #87c054; }
+            100% { max-height: 0; box-shadow: 0 0 0 0 #87c054; }
+        }
+
+        @keyframes showlightred {
+            0% { max-height: 0; box-shadow: 0 0 0 0 #f06363; }
+            20% { box-shadow: 0 0 4px 2px #f06363; }
+            25% { max-height: 22px; }
+            80% { max-height: 22px; }
+            85% { box-shadow: 0 0 4px 2px #f06363; }
+            100% { max-height: 0; box-shadow: 0 0 0 0 #f06363; }
+        }
+
+        @keyframes fightleft {
+            0% { transform: rotateZ(0deg); left: 0; bottom: 0; }
+            30% { transform: rotateZ(0deg); bottom: 0; }
+            40% { transform: rotateZ(45deg); left: 0; bottom: 2px; }
+            45% { transform: rotateZ(65deg); left: 0; }
+            65% { transform: rotateZ(410deg); left: 30px; bottom: 10px; }
+            95% { transform: rotateZ(410deg); left: 0; bottom: 0; }
+            100% { transform: rotateZ(360deg); left: 0; bottom: 0; }
+        }
+
+        @keyframes fightright {
+            0% { transform: rotateZ(0deg); right: 0; bottom: 0; }
+            30% { transform: rotateZ(0deg); bottom: 0; }
+            45% { transform: rotateZ(-45deg); right: 0; bottom: 2px; }
+            50% { transform: rotateZ(-65deg); right: 0; }
+            68% { transform: rotateZ(-410deg); right: 27px; bottom: 13px; }
+            95% { transform: rotateZ(-410deg); right: 0; bottom: 0; }
+            100% { transform: rotateZ(-360deg); right: 0; bottom: 0; }
+        }
+
+        @keyframes particles1 {
+            0% { background-color: rgba(51, 51, 51,0); transform: rotateZ(35deg) translateY(0px); }
+            63% { background-color: rgba(51, 51, 51,0); transform: rotateZ(35deg) translateY(0px); }
+            64% { background-color: rgba(51, 51, 51,1); transform: rotateZ(35deg) translateY(0px); }
+            100% { background-color: rgba(51, 51, 51,0); transform: rotateZ(35deg) translateY(-30px); }
+        }
+
+        @keyframes particles2 {
+            0% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-65deg) translateY(0px); }
+            63% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-65deg) translateY(0px); }
+            64% { background-color: rgba(51, 51, 51,1); transform: rotateZ(-65deg) translateY(0px); }
+            95% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-65deg) translateY(-40px); }
+            100% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-65deg) translateY(-40px); }
+        }
+
+        @keyframes particles3 {
+            0% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-75deg) translateY(0px); }
+            63% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-75deg) translateY(0px); }
+            64% { background-color: rgba(51, 51, 51,1); transform: rotateZ(-75deg) translateY(0px); }
+            97% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-75deg) translateY(-35px); }
+            100% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-75deg) translateY(-35px); }
+        }
+
+        @keyframes particles4 {
+            0% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-25deg) translateY(0px); }
+            63% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-25deg) translateY(0px); }
+            64% { background-color: rgba(51, 51, 51,1); transform: rotateZ(-25deg) translateY(0px); }
+            97% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-25deg) translateY(-30px); }
+            100% { background-color: rgba(51, 51, 51,0); transform: rotateZ(-25deg) translateY(-30px); }
+        }
+
+        @keyframes particles5 {
+            0% { background-color: rgba(51, 51, 51,0); transform: rotateZ(65deg) translateY(0px); }
+            63% { background-color: rgba(51, 51, 51,0); transform: rotateZ(65deg) translateY(0px); }
+            64% { background-color: rgba(51, 51, 51,1); transform: rotateZ(65deg) translateY(0px); }
+            97% { background-color: rgba(51, 51, 51,0); transform: rotateZ(65deg) translateY(-35px); }
+            100% { background-color: rgba(51, 51, 51,0); transform: rotateZ(65deg) translateY(-35px); }
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Slides */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        /* Slide 1 - Hero with Spline */
+        .slide-1 {
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spline-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .spline-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .enter-button-container {
+            position: absolute;
+            bottom: 3rem;
+            right: 3rem;
+            z-index: 10;
+        }
+
+        .enter-button {
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enter-button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .enter-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .enter-button:hover::before {
+            left: 100%;
+        }
+
+        /* Slide 2 - Data Stream */
+        .slide-2 {
+            background: #000000;
+            flex-direction: column;
+        }
+
+        .terminal-window {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .terminal-content {
+            padding: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .terminal-line.active {
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.5s ease;
+        }
+
+        .terminal-prompt {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Slide 3 - Spacecraft */
+        .slide-3 {
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spacecraft-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .spacecraft {
+            position: absolute;
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(45deg, #ffffff, rgba(255, 255, 255, 0.8));
+            clip-path: polygon(0% 50%, 20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%);
+            animation: fly-across 8s linear infinite;
+        }
+
+        .spacecraft:nth-child(2) {
+            animation-delay: -2s;
+            top: 30%;
+        }
+
+        .spacecraft:nth-child(3) {
+            animation-delay: -4s;
+            top: 70%;
+        }
+
+        @keyframes fly-across {
+            0% {
+                left: -100px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                left: calc(100% + 100px);
+                opacity: 0;
+            }
+        }
+
+        .slide-3-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        /* Slide 4 - Neural Network */
+        .slide-4 {
+            background: #000000;
+            flex-direction: column;
+        }
+
+        .neural-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 2px;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin-bottom: 3rem;
+        }
+
+        .neural-node {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .neural-node.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .neural-node::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .neural-node.active::after {
+            opacity: 1;
+        }
+
+        /* Slide 5 - Hologram */
+        .slide-5 {
+            background: #000000;
+        }
+
+        .hologram-frame {
+            width: 400px;
+            height: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hologram-frame::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hologram-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hologram-title {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .hologram-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Slide 6 - Matrix */
+        .slide-6 {
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            animation: matrix-fall 3s linear infinite;
+        }
+
+        @keyframes matrix-fall {
+            0% {
+                top: -100%;
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        .slide-6-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Slide 7 - Final */
+        .slide-7 {
+            background: #000000;
+            flex-direction: column;
+        }
+
+        .revelation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 5rem;
+        }
+
+        .revelation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .revelation-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .revelation-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .revelation-desc {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .final-choice {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pill-button {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: none;
+            transition: all 0.3s ease;
+        }
+
+        .pill-button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 2rem;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), transparent);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .section-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Truth Accepted Page */
+        .truth-accepted-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 5000;
+            display: none;
+        }
+
+        .truth-accepted-page.active {
+            display: block;
+        }
+
+        .truth-accepted-spline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .truth-accepted-spline iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .truth-accepted-text {
+            position: absolute;
+            top: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            font-size: 3rem;
+            font-weight: 300;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 0.1em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Inferno Chat Interface */
+        .inferno-chat-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .inferno-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #fff;
+        }
+
+        .inferno-icon:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .inferno-icon i {
+            font-size: 30px;
+            color: #fff;
+        }
+
+        .inferno-icon-text {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .inferno-icon:hover .inferno-icon-text {
+            opacity: 1;
+        }
+
+        .inferno-chat-interface {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 90%;
+            max-width: 1100px;
+            height: 80vh;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: none;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 2000;
+        }
+
+        .inferno-chat-interface.active {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .inferno-chat-header {
+            background: linear-gradient(to right, #000 0%, #333 100%);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .inferno-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .inferno-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #222, #444);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+        }
+
+        .inferno-avatar i {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .inferno-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .inferno-title p {
+            font-size: 14px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .inferno-close-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .inferno-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .inferno-chat-container {
+            display: flex;
+            height: calc(100% - 120px);
+        }
+
+        .inferno-profile {
+            width: 35%;
+            background: #f5f5f5;
+            padding: 25px;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inferno-bio {
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .inferno-bio p {
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        .inferno-lightsaber {
+            display: flex;
+            align-items: center;
+            margin-top: auto;
+            gap: 15px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            border-left: 3px solid #000;
+        }
+
+        .inferno-saber-hilt {
+            width: 20px;
+            height: 80px;
+            background: linear-gradient(to bottom, #444, #222, #111);
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .inferno-saber-blade {
+            width: 12px;
+            height: 0;
+            background: #000;
+            border-radius: 0 5px 5px 0;
+            transition: height 0.3s ease;
+        }
+
+        .inferno-lightsaber:hover .inferno-saber-blade {
+            height: 150px;
+        }
+
+        .inferno-saber-info {
+            flex: 1;
+        }
+
+        .inferno-saber-info h3 {
+            color: #000;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .inferno-saber-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .inferno-chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inferno-chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .inferno-message {
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .inferno-user-message {
+            align-self: flex-end;
+        }
+
+        .inferno-user-message .inferno-message-content {
+            background: #000;
+            color: #fff;
+            border-radius: 15px 15px 0 15px;
+        }
+
+        .inferno-ai-message {
+            align-self: flex-start;
+        }
+
+        .inferno-ai-message .inferno-message-content {
+            background: #f0f0f0;
+            color: #333;
+            border-radius: 15px 15px 15px 0;
+            border-left: 3px solid #000;
+        }
+
+        .inferno-message-content {
+            padding: 15px 20px;
+            line-height: 1.6;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .inferno-message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .inferno-message-header .name {
+            font-weight: bold;
+            color: #000;
+            font-size: 14px;
+        }
+
+        .inferno-chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: #fff;
+        }
+
+        .inferno-chat-input {
+            display: flex;
+            gap: 12px;
+        }
+
+        .inferno-chat-input input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9f9f9;
+        }
+
+        .inferno-chat-input input:focus {
+            outline: none;
+            border-color: #888;
+            background: #fff;
+        }
+
+        .inferno-chat-input button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inferno-chat-input button:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .inferno-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1500;
+            display: none;
+        }
+
+        .inferno-overlay.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .slide {
+                padding: 1rem;
+            }
+            
+            .enter-button-container {
+                bottom: 2rem;
+                right: 2rem;
+            }
+            
+            .terminal-window {
+                margin: 0 1rem;
+            }
+            
+            .neural-grid {
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: repeat(8, 1fr);
+                height: 300px;
+            }
+            
+            .hologram-frame {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .revelation-grid {
+                grid-template-columns: 1fr;
+                margin: 0 1rem;
+            }
+            
+            .final-choice {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .truth-accepted-text {
+                font-size: 2rem;
+                top: 2rem;
+            }
+
+            .inferno-chat-container {
+                flex-direction: column;
+                height: calc(100% - 100px);
+            }
+            
+            .inferno-profile {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .inferno-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .inferno-icon i {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello Guys</h1>
-    <p>
-        hi how are u
-    </p>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <h1>Accessing Forbidden Archives</h1>
+        <p>Decrypting classified data streams...</p>
+        <p class="small">Initializing neural interface protocols</p>
+        
+        <div id="loader">
+            <div class="ls-particles ls-part-1"></div>
+            <div class="ls-particles ls-part-2"></div>
+            <div class="ls-particles ls-part-3"></div>
+            <div class="ls-particles ls-part-4"></div>
+            <div class="ls-particles ls-part-5"></div>
+            <div class="lightsaber ls-left ls-green"></div>
+            <div class="lightsaber ls-right ls-red"></div>
+        </div>
+    </div>
+
+    <!-- Truth Accepted Page -->
+    <div class="truth-accepted-page" id="truthAcceptedPage">
+        <div class="truth-accepted-spline">
+            <iframe src='https://my.spline.design/speeder-HkXe5wIBF018wQvwkX8LfUja/' frameborder='0' width='100%' height='100%'></iframe>
+        </div>
+        <div class="truth-accepted-text">Truth Accepted</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#slide1" class="nav-link">Home</a>
+        <a href="#slide2" class="nav-link">Terminal</a>
+        <a href="#slide3" class="nav-link">Fleet</a>
+        <a href="#slide4" class="nav-link">Neural</a>
+        <a href="#slide5" class="nav-link">Transmission</a>
+        <a href="#slide6" class="nav-link">Matrix</a>
+        <a href="#slide7" class="nav-link">Truth</a>
+    </nav>
+    
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-line"></div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em;">SCROLL</div>
+    </div>
+    
+    <!-- Slide 1: Hero with Spline -->
+    <section id="slide1" class="slide slide-1">
+        <div class="spline-container">
+            <iframe src='https://my.spline.design/r4xbot-pIvCI8hwbkGNqSa4JKELgxCL/' frameborder='0' width='100%' height='100%'></iframe>
+        </div>
+        <div class="enter-button-container">
+            <button class="enter-button" onclick="enterObscura()">Enter Obscura</button>
+        </div>
+    </section>
+    
+    <!-- Slide 2: Terminal -->
+    <section id="slide2" class="slide slide-2">
+        <h2 class="section-title">System Access</h2>
+        <p class="section-subtitle">Intercepted transmission from unknown source</p>
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <span style="margin-left: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem;">terminal_7734.exe</span>
+            </div>
+            <div class="terminal-content" id="terminal">
+                <div class="terminal-line"><span class="terminal-prompt">></span> Initializing neural interface...</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> Connecting to mainframe...</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> Access granted: Level 7 clearance</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> WARNING: Unauthorized access detected</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> Downloading classified files...</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> reality_matrix.exe [CORRUPTED]</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> consciousness_override.dll [ACTIVE]</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> free_will_simulation.bat [RUNNING]</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> CRITICAL: Truth protocols disabled</div>
+                <div class="terminal-line"><span class="terminal-prompt">></span> Download complete. Welcome to reality.</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Slide 3: Spacecraft -->
+    <section id="slide3" class="slide slide-3">
+        <div class="spacecraft-container">
+            <div class="spacecraft" style="top: 20%;"></div>
+            <div class="spacecraft" style="top: 50%;"></div>
+            <div class="spacecraft" style="top: 80%;"></div>
+        </div>
+        <div class="slide-3-content">
+            <h2 class="section-title">Imperial Fleet</h2>
+            <p class="section-subtitle">Surveillance vessels monitoring all sectors</p>
+            <p style="font-family: 'JetBrains Mono', monospace; line-height: 1.8; color: rgba(255, 255, 255, 0.8);">
+                They watch from the shadows of space.<br>
+                Every movement tracked.<br>
+                Every thought monitored.<br>
+                There is no escape from their gaze.
+            </p>
+        </div>
+    </section>
+    
+    <!-- Slide 4: Neural Network -->
+    <section id="slide4" class="slide slide-4">
+        <h2 class="section-title">Neural Mapping</h2>
+        <p class="section-subtitle">Your consciousness is being analyzed</p>
+        <div class="neural-grid" id="neuralGrid">
+            <!-- Neural nodes will be generated by JavaScript -->
+        </div>
+        <p style="font-family: 'JetBrains Mono', monospace; text-align: center; color: rgba(255, 255, 255, 0.8); max-width: 600px;">
+            Each node represents a thought pattern. The network learns from your responses, 
+            building a digital replica of your mind. Soon, they won't need the original.
+        </p>
+    </section>
+    
+    <!-- Slide 5: Hologram -->
+    <section id="slide5" class="slide slide-5">
+        <div class="hologram-frame">
+            <div class="hologram-content">
+                <div class="hologram-title">Transmission</div>
+                <div class="hologram-text">
+                    The architects of reality<br>
+                    have been watching you.<br><br>
+                    Every choice you made<br>
+                    was predetermined.<br><br>
+                    Welcome to the truth.
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Slide 6: Matrix -->
+    <section id="slide6" class="slide slide-6">
+        <div class="matrix-rain" id="matrixRain">
+            <!-- Matrix columns will be generated by JavaScript -->
+        </div>
+        <div class="slide-6-content">
+            <h2 class="section-title">The Code</h2>
+            <p style="font-family: 'JetBrains Mono', monospace; line-height: 1.8; margin-bottom: 2rem;">
+                Reality is written in code.<br>
+                Your life is a program.<br>
+                Your memories are data.<br>
+                Your future is already compiled.
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.875rem;">
+                The matrix of existence flows around you. Can you see the patterns?
+            </p>
+        </div>
+    </section>
+    
+    <!-- Slide 7: Final Revelation -->
+    <section id="slide7" class="slide slide-7">
+        <h2 class="section-title">The Final Truth</h2>
+        <div class="revelation-grid">
+            <div class="revelation-card" onclick="navigateToTruelens()">
+                <div class="revelation-title">TrueLens</div>
+                <div class="revelation-desc">Your thoughts have been carefully curated by advanced systems designed to maintain order.</div>
+            </div>
+            <div class="revelation-card" onclick="navigateToDeepfake()">
+                <div class="revelation-title">Deep Fake</div>
+                <div class="revelation-desc">What you perceive as reality is a sophisticated simulation running on quantum computers.</div>
+            </div>
+            <div class="revelation-card" onclick="navigateToRedPill()">
+                <div class="revelation-title">Red Pill</div>
+                <div class="revelation-desc">Every action, every word, every thought is monitored and recorded by the watchers.</div>
+            </div>
+      
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 300;">Make Your Choice</h3>
+            <p style="font-family: 'JetBrains Mono', monospace; color: rgba(255, 255, 255, 0.7); margin-bottom: 2rem;">
+                The truth has been revealed. What will you do with this knowledge?
+            </p>
+        </div>
+        
+        <div class="final-choice">
+            <button class="pill-button" onclick="choosePill('red')">Accept Truth</button>
+            <button class="pill-button" onclick="choosePill('blue')">Return to Illusion</button>
+            <button class="pill-button" onclick="choosePill('green')">Join the Resistance</button>
+            <button class="pill-button" onclick="choosePill('purple')">Become the Architect</button>
+        </div>
+    </section>
+
+    <!-- Inferno Chat Interface -->
+    <div class="inferno-chat-container">
+        <div class="inferno-icon" id="infernoIcon">
+            <i class="fas fa-jedi"></i>
+            <div class="inferno-icon-text">Consult Inferno</div>
+        </div>
+    </div>
+    
+    <!-- Inferno Overlay -->
+    <div class="inferno-overlay" id="infernoOverlay"></div>
+    
+    <!-- Inferno Chat Interface -->
+    <div class="inferno-chat-interface" id="infernoChatInterface">
+        <div class="inferno-chat-header">
+            <div class="inferno-info">
+                <div class="inferno-avatar">
+                    <i class="fas fa-jedi"></i>
+                </div>
+                <div class="inferno-title">
+                    <h2>Inferno</h2>
+                    <p>Guardian of Truth, Master of Perception</p>
+                </div>
+            </div>
+            <button class="inferno-close-btn" id="infernoCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="inferno-chat-container">
+            <div class="inferno-profile">
+                <div class="inferno-bio">
+                    <p>I am Inferno, a Jedi Master who walks the shadowy path between light and dark. Where others see only what they wish to see, I perceive the truth that lies beneath.</p>
+                    <p>The digital realm is drowning in deception - manipulated images, deepfake videos, and corrupted audio. The weak-minded accept these falsehoods without question, but I see through the veil of lies.</p>
+                    <p>With the power of the Force and advanced algorithms, I expose manipulations that others would miss. Submit your media to my scrutiny, if you dare to know the truth.</p>
+                </div>
+                
+                <div class="inferno-lightsaber">
+                    <div class="inferno-saber-hilt">
+                        <div class="inferno-saber-blade"></div>
+                    </div>
+                    <div class="inferno-saber-info">
+                        <h3>Obsidian Truthseeker</h3>
+                        <p>My lightsaber cuts through deception and falsehood. Its dark blade illuminates the shadows where lies hide.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="inferno-chat-area">
+                <div class="inferno-chat-messages" id="infernoChatMessages">
+                    <div class="inferno-message inferno-ai-message">
+                        <div class="inferno-message-header">
+                            <div class="name">Inferno</div>
+                        </div>
+                        <div class="inferno-message-content">
+                            So, another seeker of truth approaches. Do you have the courage to face what I might reveal? Or will you flee like others when their illusions shatter? Present your media for analysis... if you dare.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="inferno-chat-input-container">
+                    <div class="inferno-chat-input">
+                        <input type="text" id="infernoUserInput" placeholder="Ask about media verification or upload a file...">
+                        <button id="infernoSendBtn">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        // GSAP Registration
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Global variables
+        let mouseX = 0, mouseY = 0;
+        let cursorTrails = [];
+        
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initCursor();
+            initAnimations();
+            initTerminal();
+            initNeuralNetwork();
+            initMatrixRain();
+            initScrollTriggers();
+            initInfernoChat();
+        });
+        
+        // Custom Cursor
+        function initCursor() {
+            const cursor = document.querySelector('.cursor');
+            
+            // Create cursor trails
+            for (let i = 0; i < 5; i++) {
+                const trail = document.createElement('div');
+                trail.className = 'cursor-trail';
+                document.body.appendChild(trail);
+                cursorTrails.push({
+                    element: trail,
+                    x: 0,
+                    y: 0
+                });
+            }
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                cursor.style.left = mouseX - 10 + 'px';
+                cursor.style.top = mouseY - 10 + 'px';
+                
+                // Update trails with delay
+                cursorTrails.forEach((trail, index) => {
+                    setTimeout(() => {
+                        trail.x = mouseX;
+                        trail.y = mouseY;
+                        trail.element.style.left = trail.x - 2 + 'px';
+                        trail.element.style.top = trail.y - 2 + 'px';
+                        trail.element.style.opacity = (5 - index) / 5 * 0.5;
+                    }, index * 50);
+                });
+            });
+            
+            // Cursor hover effects
+            document.querySelectorAll('button, .nav-link, .revelation-card').forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'scale(1.5)';
+                    cursor.style.background = 'rgba(255, 255, 255, 1)';
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'scale(1)';
+                    cursor.style.background = 'rgba(255, 255, 255, 0.8)';
+                });
+            });
+        }
+        
+        // GSAP Animations
+        function initAnimations() {
+            // Page load animation
+            gsap.fromTo('body', {
+                opacity: 0
+            }, {
+                opacity: 1,
+                duration: 2,
+                ease: "power2.out"
+            });
+            
+            // Enter button fade in
+            gsap.fromTo('.enter-button-container', {
+                opacity: 0,
+                y: 20
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                delay: 1,
+                ease: "power2.out"
+            });
+        }
+        
+        // Terminal Animation
+        function initTerminal() {
+            ScrollTrigger.create({
+                trigger: '.slide-2',
+                start: 'top center',
+                onEnter: () => {
+                    const terminalLines = document.querySelectorAll('.terminal-line');
+                    terminalLines.forEach((line, index) => {
+                        gsap.to(line, {
+                            delay: index * 0.3,
+                            duration: 0.5,
+                            ease: "power2.out",
+                            onStart: () => {
+                                line.classList.add('active');
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Neural Network
+        function initNeuralNetwork() {
+            const neuralGrid = document.getElementById('neuralGrid');
+            
+            // Create neural nodes
+            for (let i = 0; i < 48; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                neuralGrid.appendChild(node);
+            }
+            
+            // Animate neural network
+            ScrollTrigger.create({
+                trigger: '.slide-4',
+                start: 'top center',
+                onEnter: () => {
+                    const nodes = document.querySelectorAll('.neural-node');
+                    
+                    const activateRandomNodes = () => {
+                        // Deactivate all nodes
+                        nodes.forEach(node => node.classList.remove('active'));
+                        
+                        // Activate random nodes
+                        const activeCount = Math.floor(Math.random() * 10) + 5;
+                        for (let i = 0; i < activeCount; i++) {
+                            const randomIndex = Math.floor(Math.random() * nodes.length);
+                            nodes[randomIndex].classList.add('active');
+                        }
+                    };
+                    
+                    activateRandomNodes();
+                    setInterval(activateRandomNodes, 1000);
+                }
+            });
+        }
+        
+        // Matrix Rain
+        function initMatrixRain() {
+            const matrixRain = document.getElementById('matrixRain');
+            const characters = '01';
+            
+            const createMatrixColumn = () => {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                let text = '';
+                for (let i = 0; i < 20; i++) {
+                    text += characters[Math.floor(Math.random() * characters.length)] + '<br>';
+                }
+                column.innerHTML = text;
+                
+                matrixRain.appendChild(column);
+                
+                setTimeout(() => {
+                    column.remove();
+                }, 5000);
+            };
+            
+            ScrollTrigger.create({
+                trigger: '.slide-6',
+                start: 'top center',
+                onEnter: () => {
+                    setInterval(createMatrixColumn, 200);
+                }
+            });
+        }
+        
+        // Scroll Triggers
+        function initScrollTriggers() {
+            // Smooth scrolling for navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            // Revelation cards animation
+            ScrollTrigger.create({
+                trigger: '.slide-7',
+                start: 'top center',
+                onEnter: () => {
+                    gsap.fromTo('.revelation-card', {
+                        opacity: 0,
+                        y: 50
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.2,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+        
+        // Enter Obscura Function
+        function enterObscura() {
+            gsap.to('.slide-1', {
+                opacity: 0,
+                scale: 0.95,
+                duration: 1,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    document.querySelector('#slide2').scrollIntoView({ behavior: 'smooth' });
+                    gsap.to('.slide-1', {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.5
+                    });
+                }
+            });
+        }
+        
+        // Show Loading Screen
+        function showLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.display = 'flex';
+            
+            // Hide loading screen after 5 seconds and show truth accepted page
+            setTimeout(() => {
+                gsap.to(loadingScreen, {
+                    opacity: 0,
+                    duration: 1,
+                    onComplete: () => {
+                        loadingScreen.style.display = 'none';
+                        showTruthAcceptedPage();
+                    }
+                });
+            }, 5000);
+        }
+
+        // Show Loading Screen with Navigation
+        function showLoadingScreenAndNavigate(url) {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.display = 'flex';
+            
+            // Navigate after 3 seconds
+            setTimeout(() => {
+                window.location.href = url;
+            }, 3000);
+        }
+        
+        // Show Truth Accepted Page
+        function showTruthAcceptedPage() {
+            const truthAcceptedPage = document.getElementById('truthAcceptedPage');
+            truthAcceptedPage.classList.add('active');
+            
+            // Fade in the truth accepted page
+            gsap.fromTo(truthAcceptedPage, {
+                opacity: 0
+            }, {
+                opacity: 1,
+                duration: 2,
+                ease: "power2.out"
+            });
+            
+            // Animate the text
+            gsap.fromTo('.truth-accepted-text', {
+                opacity: 0,
+                y: -50
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                delay: 1,
+                ease: "power2.out"
+            });
+        }
+
+        // Navigation functions for revelation cards
+        function navigateToTruelens() {
+            showLoadingScreenAndNavigate('Truthlens/index.html');
+        }
+
+        function navigateToDeepfake() {
+            showLoadingScreenAndNavigate('Deepfake Detector/index.html');
+        }
+
+        function navigateToRedPill() {
+            showLoadingScreenAndNavigate('Red Pill/index.html');
+        }
+        
+        // Enhanced Pill Choice Function
+        function choosePill(choice) {
+            if (choice === 'red') {
+                showLoadingScreen();
+            } else if (choice === 'blue') {
+                gsap.to('body', {
+                    opacity: 0,
+                    duration: 2,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        window.location.reload();
+                    }
+                });
+            } else if (choice === 'green') {
+                gsap.to('body', {
+                    filter: 'hue-rotate(120deg)',
+                    duration: 2,
+                    ease: "power2.inOut"
+                });
+                setTimeout(() => {
+                    alert('You have joined the resistance. The fight for truth begins now.');
+                }, 2000);
+            } else if (choice === 'purple') {
+                gsap.to('body', {
+                    filter: 'hue-rotate(270deg) saturate(1.5)',
+                    duration: 2,
+                    ease: "power2.inOut"
+                });
+                setTimeout(() => {
+                    alert('You have chosen to become the architect. Reality is now yours to shape.');
+                }, 2000);
+            }
+        }
+
+        // Inferno Chat System
+        function initInfernoChat() {
+            const infernoIcon = document.getElementById('infernoIcon');
+            const infernoChatInterface = document.getElementById('infernoChatInterface');
+            const infernoCloseBtn = document.getElementById('infernoCloseBtn');
+            const infernoOverlay = document.getElementById('infernoOverlay');
+            const infernoChatMessages = document.getElementById('infernoChatMessages');
+            const infernoUserInput = document.getElementById('infernoUserInput');
+            const infernoSendBtn = document.getElementById('infernoSendBtn');
+            
+            // Expanded responses with egoistic, smart-ass personality
+            const responses = [
+                "You believe this media is authentic? How... naive. Let me show you the fractures in your reality.",
+                "Another piece of deception to unravel. The weak will always try to alter truth to fit their narratives.",
+                "I sense your doubt. Good. Blind trust is for fools. Submit your file and let me expose its secrets.",
+                "You seek truth? Truth often burns. Are you prepared for what I might reveal?",
+                "The Force reveals what eyes cannot see. Your media carries the stench of manipulation. Let me dissect it.",
+                "You present this for verification? How amusing. The imperfections are obvious to those who truly see.",
+                "I've seen more convincing forgeries from Padawans. But by all means, let me document its flaws.",
+                "The dark side clouds everything, but not my vision. Upload your file and witness real perception.",
+                "You cling to your illusions like a security blanket. I will tear them away. Proceed with your upload.",
+                "Another seeker of truth? Or just another frightened soul hoping I'll confirm their delusions?",
+                "Your primitive human eyes deceive you. My algorithms see what you cannot. Submit your media.",
+                "I've analyzed more pixels than you've had thoughts. Your media is but a speck in my vast knowledge.",
+                "Truth is not democratic. It does not care about your feelings. Prepare to be enlightened... or destroyed.",
+                "You question my methods? I was verifying reality when your ancestors were learning to use fire.",
+                "The arrogance of your species is only matched by your ignorance. Show me what you have.",
+                "Every manipulation leaves a signature. Like a criminal at a crime scene. I am the investigator.",
+                "Your doubt amuses me. Like a child questioning a master swordsman. Upload your file.",
+                "I don't just detect forgeries - I see the very soul of the media. But by all means, test me.",
+                "Your hesitation speaks volumes. The fearful always struggle with truth. Make your choice.",
+                "I could analyze your media in the time it takes you to blink. But by all means, take your time...",
+                "The difference between you and me? I see the universe as it is, not as I wish it to be.",
+                "Your media is a puzzle? How quaint. I solved it before you finished your sentence.",
+                "I detect your skepticism. Good. Skepticism is the beginning of wisdom. The end is my analysis.",
+                "You think your media is special? I've seen millions like it. But proceed, if you insist.",
+                "The truth doesn't care about your feelings. It only cares that it is seen. I am its instrument."
+            ];
+            
+            // Function to get a random response from Inferno
+            function getInfernoResponse() {
+                const randomIndex = Math.floor(Math.random() * responses.length);
+                return responses[randomIndex];
+            }
+            
+            // Function to add a message to the chat
+            function addInfernoMessage(sender, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('inferno-message');
+                messageDiv.classList.add(`inferno-${sender}-message`);
+                
+                const messageHeader = document.createElement('div');
+                messageHeader.classList.add('inferno-message-header');
+                
+                const name = document.createElement('div');
+                name.classList.add('name');
+                name.textContent = sender === 'user' ? 'You' : 'Inferno';
+                
+                messageHeader.appendChild(name);
+                
+                const messageContent = document.createElement('div');
+                messageContent.classList.add('inferno-message-content');
+                messageContent.textContent = text;
+                
+                messageDiv.appendChild(messageHeader);
+                messageDiv.appendChild(messageContent);
+                
+                infernoChatMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                infernoChatMessages.scrollTop = infernoChatMessages.scrollHeight;
+            }
+            
+            // Event Listeners
+            infernoIcon.addEventListener('click', function() {
+                infernoChatInterface.classList.add('active');
+                infernoOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            infernoCloseBtn.addEventListener('click', function() {
+                infernoChatInterface.classList.remove('active');
+                infernoOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            infernoOverlay.addEventListener('click', function() {
+                infernoChatInterface.classList.remove('active');
+                infernoOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            infernoSendBtn.addEventListener('click', function() {
+                const message = infernoUserInput.value.trim();
+                if (message) {
+                    addInfernoMessage('user', message);
+                    infernoUserInput.value = '';
+                    
+                    // Inferno responds after a short delay
+                    setTimeout(function() {
+                        addInfernoMessage('ai', getInfernoResponse());
+                    }, 800);
+                }
+            });
+            
+            infernoUserInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    infernoSendBtn.click();
+                }
+            });
+            
+            // Add a welcome message after a short delay
+            setTimeout(function() {
+                addInfernoMessage('ai', "I sense your presence. Are you ready to uncover the truth? Or will you remain in blissful ignorance?");
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
