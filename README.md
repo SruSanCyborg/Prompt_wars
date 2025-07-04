@@ -100,6 +100,10 @@ NumPy 📊
 
 CUDA ⚡
 
+Three.js
+
+webGL
+
 Frontend
 HTML / CSS / JavaScript
 
@@ -122,6 +126,12 @@ Open an issue or submit a pull request for improvements, bug fixes, or feature r
 
 ## 📜 License
 This project is licensed under the MIT License — because we believe open access to truth-detection tools is essential.
+
+Challenges/bounties done:
+1.dark theme
+2.easter egg--light saber (loading page)
+3.recreated popular scenes 
+4.3d model -in homepage and also in deepfake scanner 
 
 ## 🙌 Acknowledgments
 Inspired by real-world challenges in digital trust & safety
