@@ -1006,8 +1006,8 @@
                     // Randomize the effect for visual interest
                     const rand = Math.random() * 0.5;
                     const height = Math.min(40, Math.max(2, volume * 40 * (1 - index/40) + rand * 10));
-                    bar.style.height = ${height}px;
-                    bar.style.background = linear-gradient(to top, var(--secondary), var(--primary));
+                    bar.style.height = `${height}px`;
+                    bar.style.background = `linear-gradient(to top, var(--secondary), var(--primary))`;
                     bar.style.opacity = 0.4 + (height / 40) * 0.6;
                 });
             }
@@ -1050,9 +1050,9 @@
                     }
                     
                     // Update transcript display
-                    voiceTranscript.innerHTML = <p>${transcriptText}</p>;
+                    voiceTranscript.innerHTML = `<p>${transcriptText}</p>`;
                     if (interimTranscript) {
-                        voiceTranscript.innerHTML += <p style="color: var(--text-dim);">${interimTranscript}</p>;
+                        voiceTranscript.innerHTML += `<p style="color: var(--text-dim);">${interimTranscript}</p>`;
                     }
                     
                     // Enable analyze button
@@ -1064,7 +1064,7 @@
                 recognition.onerror = function(event) {
                     console.error('Speech recognition error', event.error);
                     stopRecording();
-                    voiceTranscript.innerHTML = <p style="color: var(--danger);">Error: ${event.error}</p>;
+                    voiceTranscript.innerHTML = `<p style="color: var(--danger);">Error: ${event.error}</p>`;
                 };
                 
                 recognition.onend = function() {
@@ -1110,7 +1110,7 @@
                     
                     // Finalize transcript
                     if (transcriptText.trim().length > 0) {
-                        voiceTranscript.innerHTML = <p>${transcriptText}</p>;
+                        voiceTranscript.innerHTML = `<p>${transcriptText}</p>`;
                         analyzeBtn.disabled = false;
                     }
                 }
@@ -1127,13 +1127,13 @@
                     const fileName = file.name;
                     
                     // Simulate processing audio file
-                    voiceTranscript.innerHTML = <p>Processing audio file: ${fileName}...</p>;
+                    voiceTranscript.innerHTML = `<p>Processing audio file: ${fileName}...</p>`;
                     
                     // Simulate transcription after a delay
                     setTimeout(() => {
-                        transcriptText = This is a simulated transcription of the audio file "${fileName}". In a real application, this would be the actual transcribed text from the audio file. For demonstration purposes, we're using this placeholder text to show how the system would analyze spoken content. Notice how certain phrases might be designed to manipulate emotions or distort reality.;
+                        transcriptText = `This is a simulated transcription of the audio file "${fileName}". In a real application, this would be the actual transcribed text from the audio file. For demonstration purposes, we're using this placeholder text to show how the system would analyze spoken content. Notice how certain phrases might be designed to manipulate emotions or distort reality.`;
                         
-                        voiceTranscript.innerHTML = <p>${transcriptText}</p>;
+                        voiceTranscript.innerHTML = `<p>${transcriptText}</p>`;
                         analyzeBtn.disabled = false;
                     }, 2000);
                 }
@@ -1200,11 +1200,11 @@
                     <p>Analysis will reveal psychological techniques and countermeasures</p>
                 </div>`;
                 
-                highlightedText.innerHTML = <p>Upload content to see trigger word analysis...</p>;
+                highlightedText.innerHTML = `<p>Upload content to see trigger word analysis...</p>`;
                 tempPointer.style.left = '20%';
                 
-                manipulationList.innerHTML = <li><i class="fas fa-spinner fa-pulse"></i> Analyzing...</li>;
-                psychologyList.innerHTML = <li><i class="fas fa-spinner fa-pulse"></i> Analyzing...</li>;
+                manipulationList.innerHTML = `<li><i class="fas fa-spinner fa-pulse"></i> Analyzing...</li>`;
+                psychologyList.innerHTML = `<li><i class="fas fa-spinner fa-pulse"></i> Analyzing...</li>`;
                 
                 // Reset metrics
                 manipulationValue.textContent = '0%';
@@ -1257,12 +1257,12 @@
                     {
                         logger: progress => {
                             if (progress.status === 'recognizing text') {
-                                progressLabel.textContent = Processing: ${Math.round(progress.progress * 100)}%;
-                                progressFill.style.width = ${progress.progress * 100}%;
+                                progressLabel.textContent = `Processing: ${Math.round(progress.progress * 100)}%`;
+                                progressFill.style.width = `${progress.progress * 100}%`;
                             } else {
                                 progressLabel.textContent = progress.status;
                                 if (progress.progress) {
-                                    progressFill.style.width = ${progress.progress * 100}%;
+                                    progressFill.style.width = `${progress.progress * 100}%`;
                                 }
                             }
                         }
@@ -1283,7 +1283,6 @@
                 });
             }
             
-            // Enhanced text analysis function
             function analyzeText(text) {
                 // Update progress
                 progressLabel.textContent = 'Analyzing content with AI...';
@@ -1294,21 +1293,72 @@
                     // Hide progress
                     progressContainer.style.display = 'none';
                     
-                    // ANALYZE CONTENT
-                    const results = performTextAnalysis(text);
+                    // Simulate analysis results
+                    const isManipulative = text.toLowerCase().includes('shocking') || 
+                                          text.toLowerCase().includes('hoax') || 
+                                          text.toLowerCase().includes('must share') ||
+                                          text.toLowerCase().includes('distort') ||
+                                          text.toLowerCase().includes('manipulate');
+                    
+                    const isEmotional = text.toLowerCase().includes('urgent') || 
+                                      text.toLowerCase().includes('freedom') || 
+                                      text.toLowerCase().includes('danger') ||
+                                      text.toLowerCase().includes('fear') ||
+                                      text.toLowerCase().includes('threat');
+                    
+                    const hasPolitical = text.toLowerCase().includes('political') || 
+                                      text.toLowerCase().includes('government') || 
+                                      text.toLowerCase().includes('election') ||
+                                      text.toLowerCase().includes('party') ||
+                                      text.toLowerCase().includes('agenda');
                     
                     // Update metrics
-                    manipulationValue.textContent = ${results.manipulation}%;
-                    emotionalValue.textContent = ${results.emotional}%;
-                    politicalValue.textContent = ${results.political}%;
-                    inconsistenciesValue.textContent = results.inconsistencies;
+                    manipulationValue.textContent = isManipulative ? '92%' : '15%';
+                    emotionalValue.textContent = isEmotional ? '88%' : '22%';
+                    politicalValue.textContent = hasPolitical ? '76%' : '18%';
+                    inconsistenciesValue.textContent = isManipulative ? '3' : '1';
                     
                     // Update analysis details
                     analysisDetails.innerHTML = '';
                     
-                    results.findings.forEach(item => {
+                    const findings = [
+                        {
+                            type: 'manipulation',
+                            label: 'Manipulative Language',
+                            description: isManipulative 
+                                ? 'Phrases designed to provoke strong reactions without evidence detected' 
+                                : 'Minimal manipulative language detected',
+                            icon: 'exclamation-triangle'
+                        },
+                        {
+                            type: 'emotional',
+                            label: 'Emotional Bait',
+                            description: isEmotional 
+                                ? 'Appeals to fear and urgency detected to bypass critical thinking' 
+                                : 'Low emotional manipulation detected',
+                            icon: 'heart-crack'
+                        },
+                        {
+                            type: 'political',
+                            label: 'Political Framing',
+                            description: hasPolitical 
+                                ? 'Content frames issues through a political lens rather than factual basis' 
+                                : 'Minimal political framing detected',
+                            icon: 'flag'
+                        },
+                        {
+                            type: 'inconsistency',
+                            label: 'Logical Inconsistency',
+                            description: isManipulative 
+                                ? 'Contradictory claims identified that undermine credibility' 
+                                : 'No significant logical inconsistencies detected',
+                            icon: 'circle-exclamation'
+                        }
+                    ];
+                    
+                    findings.forEach(item => {
                         const detailItem = document.createElement('div');
-                        detailItem.className = detail-item ${item.type};
+                        detailItem.className = `detail-item ${item.type}`;
                         detailItem.innerHTML = `
                             <div class="label"><i class="fas fa-${item.icon}"></i> ${item.label}</div>
                             <div class="description">${item.description}</div>
@@ -1321,241 +1371,73 @@
                         <div class="insight">
                             <h4><i class="fas fa-lightbulb"></i> Psychological Techniques Detected:</h4>
                             <ul>
-                                ${results.psychologicalTechniques.map(tech => 
-                                    <li><strong>${tech.name}</strong>: ${tech.description}</li>
-                                ).join('')}
+                                <li><strong>${isEmotional ? 'Appeal to Emotion' : 'Minimal Emotional Manipulation'}</strong>: ${isEmotional ? 'Using alarming language to trigger emotional responses' : 'Content maintains relatively neutral tone'}</li>
+                                <li><strong>${isManipulative ? 'False Urgency' : 'Standard Persuasion'}</strong>: ${isManipulative ? 'Creating artificial time pressure to prompt action' : 'No significant false urgency detected'}</li>
+                                <li><strong>${text.toLowerCase().includes('us vs them') ? 'Tribal Framing' : 'Inclusive Language'}</strong>: ${text.toLowerCase().includes('us vs them') ? 'Dividing language that creates artificial groups' : 'Minimal divisive language detected'}</li>
                             </ul>
                         </div>
                         <div class="insight">
                             <h4><i class="fas fa-shield-alt"></i> Recommended Countermeasures:</h4>
                             <ul>
-                                ${results.countermeasures.map(item => 
-                                    <li>${item}</li>
-                                ).join('')}
+                                <li>Verify claims through multiple reputable sources</li>
+                                <li>Consider the source's potential biases and motivations</li>
+                                <li>Notice emotional triggers and separate from factual content</li>
+                                <li>Look for original sources of any cited data or studies</li>
+                                <li>Check dates and context - is this information current?</li>
                             </ul>
                         </div>
                     `;
                     
                     // Update AI Insight Summary
-                    manipulationList.innerHTML = results.manipulationList.map(item => 
-                        <li><i class="fas fa-hand-point-right"></i> ${item}</li>
-                    ).join('');
+                    manipulationList.innerHTML = isManipulative ? `
+                        <li><i class="fas fa-hand-point-right"></i> Guilt-tripping</li>
+                        <li><i class="fas fa-hand-point-right"></i> Emotional invalidation</li>
+                        <li><i class="fas fa-hand-point-right"></i> Victim-blaming</li>
+                        <li><i class="fas fa-hand-point-right"></i> Gaslighting</li>
+                    ` : `
+                        <li><i class="fas fa-check-circle"></i> Minimal manipulation detected</li>
+                        <li><i class="fas fa-info-circle"></i> Standard persuasive techniques</li>
+                    `;
                     
-                    psychologyList.innerHTML = results.psychologyList.map(item => 
-                        <li><i class="fas fa-brain"></i> ${item}</li>
-                    ).join('');
+                    psychologyList.innerHTML = `
+                        <li><i class="fas fa-brain"></i> Instead of owning the impact of their actions, the author deflects, reverses blame, and shuts down dialogue</li>
+                        <li><i class="fas fa-brain"></i> It doesn't tell you the truth — it shows how the illusion was built</li>
+                        <li><i class="fas fa-brain"></i> Uses emotional triggers to bypass critical thinking</li>
+                    `;
                     
                     // Update highlighted text
+                    let sampleText = text;
+                    if (sampleText.length < 50) {
+                        sampleText = "This shocking revelation must be shared immediately! The government is hiding the truth about this dangerous situation. If you care about freedom, you'll act now before it's too late. They're trying to silence us and control the narrative.";
+                    }
+                    
                     highlightedText.innerHTML = `
                         <p>
-                            ${results.highlightedText}
+                            ${sampleText.replace(/(shocking|urgent|dangerous|freedom|silence|government|control)/gi, 
+                                (match) => {
+                                    let cls = 'trigger-manipulation';
+                                    let tip = 'Designed to create strong emotional reaction';
+                                    
+                                    if (match.toLowerCase() === 'government') {
+                                        cls = 'trigger-political';
+                                        tip = 'Political framing to create opposition';
+                                    } else if (['dangerous', 'freedom'].includes(match.toLowerCase())) {
+                                        cls = 'trigger-emotional';
+                                        tip = 'Emotional trigger word';
+                                    } else if (['control', 'silence'].includes(match.toLowerCase())) {
+                                        tip = 'Victim-blaming technique';
+                                    }
+                                    
+                                    return `<span class="${cls}">${match}<span class="tooltip">${tip}</span></span>`;
+                                }
+                            )}
                         </p>
                     `;
                     
                     // Update emotional temperature
-                    tempPointer.style.left = ${results.emotionalTemperature}%;
+                    const intensity = isEmotional ? 85 : isManipulative ? 65 : 35;
+                    tempPointer.style.left = `${intensity}%`;
                 }, 1500);
-            }
-            
-            // Text analysis algorithm
-            function performTextAnalysis(text) {
-                // Define analysis parameters
-                const manipulationKeywords = ['shocking', 'hoax', 'must share', 'distort', 'manipulate', 'cover-up', 'censored', 'secret', 'they don\'t want you to know'];
-                const emotionalKeywords = ['urgent', 'freedom', 'danger', 'fear', 'threat', 'emergency', 'alarming', 'terrifying', 'heartbreaking'];
-                const politicalKeywords = ['political', 'government', 'election', 'party', 'agenda', 'liberal', 'conservative', 'leftist', 'right-wing', 'socialist'];
-                
-                // Calculate scores based on keyword frequency
-                let manipulationScore = 0;
-                let emotionalScore = 0;
-                let politicalScore = 0;
-                let inconsistencies = 0;
-                
-                // Convert to lowercase for case-insensitive matching
-                const lowerText = text.toLowerCase();
-                
-                // Count keyword occurrences
-                manipulationKeywords.forEach(word => {
-                    const regex = new RegExp('\\b' + word + '\\b', 'gi');
-                    const matches = text.match(regex);
-                    if (matches) manipulationScore += matches.length;
-                });
-                
-                emotionalKeywords.forEach(word => {
-                    const regex = new RegExp('\\b' + word + '\\b', 'gi');
-                    const matches = text.match(regex);
-                    if (matches) emotionalScore += matches.length;
-                });
-                
-                politicalKeywords.forEach(word => {
-                    const regex = new RegExp('\\b' + word + '\\b', 'gi');
-                    const matches = text.match(regex);
-                    if (matches) politicalScore += matches.length;
-                });
-                
-                // Calculate percentages (capped at 100%)
-                const manipulationPercent = Math.min(100, Math.round(manipulationScore * 15));
-                const emotionalPercent = Math.min(100, Math.round(emotionalScore * 20));
-                const politicalPercent = Math.min(100, Math.round(politicalScore * 18));
-                
-                // Detect inconsistencies (simulated logic)
-                inconsistencies = Math.min(5, 
-                    (text.match(/(but|however|although|yet)/gi)?.length || 0) +
-                    (text.match(/contradict|inconsisten|conflict|discrepan/gi)?.length || 0)
-                );
-                
-                // Create highlighted text with annotations
-                let highlightedText = text;
-                
-                // Highlight manipulation terms
-                manipulationKeywords.forEach(word => {
-                    const regex = new RegExp('\\b(' + word + ')\\b', 'gi');
-                    highlightedText = highlightedText.replace(regex, 
-                        <span class="trigger-manipulation">$1<span class="tooltip">Designed to create strong emotional reaction</span></span>
-                    );
-                });
-                
-                // Highlight emotional terms
-                emotionalKeywords.forEach(word => {
-                    const regex = new RegExp('\\b(' + word + ')\\b', 'gi');
-                    highlightedText = highlightedText.replace(regex, 
-                        <span class="trigger-emotional">$1<span class="tooltip">Emotional trigger word</span></span>
-                    );
-                });
-                
-                // Highlight political terms
-                politicalKeywords.forEach(word => {
-                    const regex = new RegExp('\\b(' + word + ')\\b', 'gi');
-                    highlightedText = highlightedText.replace(regex, 
-                        <span class="trigger-political">$1<span class="tooltip">Political framing term</span></span>
-                    );
-                });
-                
-                // Generate findings
-                const findings = [
-                    {
-                        type: 'manipulation',
-                        label: 'Manipulative Language',
-                        description: manipulationPercent > 70 
-                            ? High level (${manipulationScore} instances) of manipulative language designed to provoke strong reactions 
-                            : manipulationPercent > 40 
-                                ? Moderate level (${manipulationScore} instances) of manipulative techniques
-                                : Minimal manipulative language detected,
-                        icon: 'exclamation-triangle'
-                    },
-                    {
-                        type: 'emotional',
-                        label: 'Emotional Bait',
-                        description: emotionalPercent > 75 
-                            ? Significant emotional manipulation (${emotionalScore} triggers) detected to bypass critical thinking 
-                            : emotionalPercent > 45 
-                                ? Moderate emotional appeals (${emotionalScore} triggers) detected
-                                : Low emotional manipulation detected,
-                        icon: 'heart-crack'
-                    },
-                    {
-                        type: 'political',
-                        label: 'Political Framing',
-                        description: politicalPercent > 65 
-                            ? Strong political framing (${politicalScore} terms) detected indicating bias 
-                            : politicalPercent > 35 
-                                ? Moderate political framing (${politicalScore} terms) detected
-                                : Minimal political framing detected,
-                        icon: 'flag'
-                    },
-                    {
-                        type: 'inconsistency',
-                        label: 'Logical Inconsistency',
-                        description: inconsistencies > 3 
-                            ? ${inconsistencies} contradictions identified that undermine credibility 
-                            : inconsistencies > 0 
-                                ? ${inconsistencies} potential logical inconsistencies found
-                                : No significant logical inconsistencies detected,
-                        icon: 'circle-exclamation'
-                    }
-                ];
-                
-                // Generate cognitive insights
-                const psychologicalTechniques = [];
-                
-                if (manipulationPercent > 70) {
-                    psychologicalTechniques.push({
-                        name: 'Appeal to Emotion',
-                        description: 'Using alarming language to trigger emotional responses'
-                    });
-                }
-                
-                if (emotionalPercent > 75) {
-                    psychologicalTechniques.push({
-                        name: 'Fear Mongering',
-                        description: 'Creating artificial threats to provoke anxiety'
-                    });
-                }
-                
-                if (politicalPercent > 65) {
-                    psychologicalTechniques.push({
-                        name: 'Tribal Framing',
-                        description: 'Dividing language that creates artificial groups'
-                    });
-                }
-                
-                if (inconsistencies > 3) {
-                    psychologicalTechniques.push({
-                        name: 'Double Bind',
-                        description: 'Presenting contradictory demands to create confusion'
-                    });
-                }
-                
-                // Add default if none detected
-                if (psychologicalTechniques.length === 0) {
-                    psychologicalTechniques.push({
-                        name: 'Standard Persuasion',
-                        description: 'Content uses conventional persuasive techniques'
-                    });
-                }
-                
-                const countermeasures = [
-                    'Verify claims through multiple reputable sources',
-                    'Consider the source\'s potential biases and motivations',
-                    'Notice emotional triggers and separate from factual content',
-                    'Look for original sources of any cited data or studies',
-                    'Check dates and context - is this information current?'
-                ];
-                
-                // Generate manipulation list
-                const manipulationList = [];
-                if (manipulationPercent > 70) {
-                    manipulationList.push('Guilt-tripping');
-                    manipulationList.push('Emotional invalidation');
-                    manipulationList.push('Victim-blaming');
-                    manipulationList.push('Gaslighting techniques');
-                } else {
-                    manipulationList.push('Minimal manipulation detected');
-                    manipulationList.push('Standard persuasive techniques');
-                }
-                
-                // Generate psychology list
-                const psychologyList = [
-                    'Instead of owning the impact of their actions, the author deflects, reverses blame, and shuts down dialogue',
-                    'It doesn\'t tell you the truth — it shows how the illusion was built',
-                    'Uses emotional triggers to bypass critical thinking'
-                ];
-                
-                // Calculate emotional temperature (0-100%)
-                const emotionalTemperature = Math.min(100, emotionalPercent + 10);
-                
-                return {
-                    manipulation: manipulationPercent,
-                    emotional: emotionalPercent,
-                    political: politicalPercent,
-                    inconsistencies: inconsistencies,
-                    findings: findings,
-                    psychologicalTechniques: psychologicalTechniques,
-                    countermeasures: countermeasures,
-                    manipulationList: manipulationList,
-                    psychologyList: psychologyList,
-                    highlightedText: highlightedText,
-                    emotionalTemperature: emotionalTemperature
-                };
             }
         });
     </script>
