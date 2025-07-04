@@ -1,0 +1,14 @@
+
+torch
+opencv-python
+numpy
+scikit-learn
+Pillow
+imageio
+ffmpeg-python
+matplotlib
+joblib
+flask
+transformers
+torchvision
+pillow

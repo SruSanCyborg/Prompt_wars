@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Deepfake Detector</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.171.0/build/three.webgpu.js",
+          "three/webgpu": "https://unpkg.com/three@0.171.0/build/three.webgpu.js",
+          "three/tsl": "https://unpkg.com/three@0.171.0/build/three.tsl.js",
+          "three/addons/": "https://unpkg.com/three@0.171.0/examples/jsm/"
+        }
+      }
+    </script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #000;
+      }
+      #three-bg-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        display: block;
+      }
+      .center-content {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .cube-title {
+      position: absolute;
+      top: 10vh;
+      transform: translateX(-50%);
+      font-size: 2.8rem;
+      color: #ffffff;
+      text-shadow: 0 0 18px #3c3d3d, 0 0 32px #443f3f;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      letter-spacing: 2px;
+      font-weight: bold;
+      pointer-events: none;
+      user-select: none;
+      text-align: center;
+      z-index: 3;
+      }
+      .upload-meter-container {
+        margin-top: 20vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
+        pointer-events: auto;
+      }
+      .upload-area {
+        border: 2px dashed #ffffff;
+        border-radius: 16px;
+        background: rgba(0, 230, 168, 0.08);
+        padding: 36px 60px;
+        margin-bottom: 24px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 0 24px #00e6a833, 0 0 8px #007cf066;
+        cursor: pointer;
+        text-align: center;
+        color: #ffffff;
+        font-size: 1.2rem;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-weight: 500;
+      }
+      .upload-area:hover, .upload-area.dragover {
+        border-color: #fff;
+        box-shadow: 0 0 32px #00e6a8cc, 0 0 16px #007cf0cc;
+        background: rgba(0, 230, 168, 0.13);
+      }
+      input[type="file"] {
+        display: none;
+      }
+      button {
+        background: linear-gradient(90deg, #4a4a4a 0%, #007cf0 100%);
+        color: #fff;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s, box-shadow 0.3s;
+        box-shadow: 0 0 8px #2f2f2fcc;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-weight: 500;
+        margin-bottom: 18px;
+      }
+      button:hover {
+        background: linear-gradient(90deg, #007cf0 0%, #00e6a8 100%);
+        box-shadow: 0 0 16px #00e6a8cc;
+      }
+      #meter-container {
+        width: 400px;
+        height: 300px;
+        margin: 0 auto;
+        background: #232946;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px #00e6a8cc, 0 0 32px #007cf0cc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      #meter-percentage {
+        position: absolute;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%);
+        font-size: 2.2rem;
+        color: #fff;
+        text-shadow: 0 0 12px #00e6a8, 0 0 24px #007cf0;
+        pointer-events: none;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .result-label {
+        font-size: 1.5rem;
+        margin-top: 20px;
+        color: #00e6a8;
+        text-shadow: 0 0 8px #00e6a8, 0 0 16px #007cf0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-weight: 600;
+      }
+      .confidence-label {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        color: #f5f6fa;
+        text-shadow: 0 0 6px #00e6a8;
+        font-family: 'Segoe UI', Arial, sans-serif;
+      }
+    </style>
+</head>
+<body>
+    <canvas id="three-bg-canvas"></canvas>
+    <div class="center-content">
+      <div class="cube-title">Welcome! To the realm of Truth</div>
+      <div class="upload-meter-container">
+        <form method="post" enctype="multipart/form-data" id="upload-form" autocomplete="off">
+            <label class="upload-area" id="upload-area">
+                <span id="upload-label">Click or drag an image/video here to upload</span>
+                <input type="file" name="file" id="file-input" accept="image/*,video/*" required>
+            </label>
+            <button type="submit">Upload & Detect</button>
+            {% if result %}
+                <div id="docsChart"></div>
+            {% endif %}
+        </form>
+        <div class="result-container">
+          {% if result %}
+            <div class="result-label" id="result-label"></div>
+            <div class="confidence-label" id="confidence-label"></div>
+            <script>
+              // Parse and display result
+              let resultText = `{{ result }}`;
+              let predMatch = resultText.match(/Prediction: (\w+) \(Confidence: ([\d\.]+)%\)/i);
+              let pred = predMatch ? predMatch[1] : '';
+              let conf = predMatch ? parseFloat(predMatch[2]) : 0;
+              document.getElementById('result-label').innerText = pred ? pred.toUpperCase() : resultText;
+              document.getElementById('confidence-label').innerText = pred ? `Confidence: ${conf.toFixed(2)}%` : '';
+            </script>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <!-- Three.js WebGPU Cube Background -->
+    <script type="module">
+      import * as THREE from "three";
+      import * as tsl from "three/tsl";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { pass, mrt, output, emissive } from "three/tsl";
+      import { bloom } from 'three/addons/tsl/display/BloomNode.js';
+
+      // Scene, Camera, Renderer
+      let scene = new THREE.Scene();
+      scene.backgroundNode = tsl.color(0x000000);
+      let camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+      camera.position.set(-0.1, 0.25, 1).setLength(5);
+
+      let renderer = new THREE.WebGPURenderer({ antialias: true, canvas: document.getElementById('three-bg-canvas') });
+      renderer.setPixelRatio(devicePixelRatio);
+      renderer.setSize(innerWidth, innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+      // Postprocessing
+      class Postprocessing extends THREE.PostProcessing {
+        constructor(renderer) {
+          const scenePass = pass(scene, camera);
+          scenePass.setMRT(
+            mrt({
+              output,
+              emissive
+            })
+          );
+          const outputPass = scenePass.getTextureNode();
+          const emissivePass = scenePass.getTextureNode("emissive");
+          const bloomPass = bloom(emissivePass, 0.2, 0);
+          super(renderer);
+          this.outputNode = outputPass.add( bloomPass );
+        }
+      }
+      let postprocessing = new Postprocessing(renderer);
+
+      // Cube
+      class BoxOfLight extends THREE.Mesh{
+        constructor(){
+          let g = new THREE.BoxGeometry(2,2,2);
+          let m = new THREE.MeshPhysicalNodeMaterial({
+            side: THREE.DoubleSide,
+            metalness:0.4,
+            roughnessNode: tsl.smoothstep(
+              tsl.abs(
+                tsl.dot(
+                  tsl.normalView, 
+                  tsl.positionView.normalize().negate()
+                )
+              ), 
+              0.1, 
+              0.25
+            ).oneMinus(),
+            transmission: 1,
+            ior: 1.345,
+            thickness: 1.5,
+            emissiveNode: tsl.Fn(() => {
+              let uv = tsl.uv().toVar();
+              let absUV = uv.sub(0.5).abs().toVar();
+              let maxUV = tsl.max(absUV.x, absUV.y);
+              let fn = tsl.smoothstep(0.48, 0.49, maxUV);
+              let col = tsl.color(0x46f546).mul(2);
+              return col.mul(fn);
+            })()
+          });
+          super(g, m);
+
+          [
+            [ 1, 0, 0], 
+            [-1, 0, 0], 
+            [ 0, 1, 0], 
+            [ 0,-1, 0], 
+            [ 0, 0, 1], 
+            [ 0, 0,-1]
+          ].forEach(l => {
+            let v = new THREE.Vector3(...l);
+            let light = new THREE.SpotLight(0x46f546, Math.PI * 10, 10, Math.PI * 0.75, 1, 2);
+            light.position.copy(v);
+            light.target.position.copy(v.multiplyScalar(2));
+            this.add(light);
+            this.add(light.target);
+          });
+          
+          this.inits = {
+            rot: {x: Math.PI * 2 * Math.random(), y: Math.PI * 2 * Math.random(), z: Math.PI * 2 * Math.random()}
+          }
+        }
+        
+        update(t){
+          this.rotation.set(
+            this.inits.rot.x + t * 0.4 * Math.PI * 2,
+            this.inits.rot.y + t * 0.2 * Math.PI * 2,
+            this.inits.rot.z
+          )
+          this.position.y = 0.25 + Math.sin(t * Math.PI * 2 * 0.125) * 0.75;
+        }
+      }
+      let boxOfLight = new BoxOfLight();
+      boxOfLight.position.set(0, 1, 0);
+      scene.add(boxOfLight);
+
+      // Subtle mesh surface below cube
+      class HollySurface extends THREE.Mesh{
+        constructor(){
+          let shape = new THREE.Shape([[1, 1], [-1, 1], [-1, -1], [1, -1]].reverse().map(p => {return new THREE.Vector2(...p).multiplyScalar(10)}));
+          let size = 1.5;
+          let radius = 0.5;
+          let center = size - radius;
+          let hole = new THREE.Path()
+            .absarc( center, center, radius, Math.PI * 0.5 * 0, Math.PI * 0.5 * 1)
+            .absarc(-center, center, radius, Math.PI * 0.5 * 1, Math.PI * 0.5 * 2)
+            .absarc(-center,-center, radius, Math.PI * 0.5 * 2, Math.PI * 0.5 * 3)
+            .absarc( center,-center, radius, Math.PI * 0.5 * 3, Math.PI * 0.5 * 4)
+          shape.holes.push(hole);
+          
+          let g = new THREE.ExtrudeGeometry(
+            shape, 
+            {
+              depth: 0.875, 
+              bevelSize: 0.05,
+              bevelThickness: 0.05,
+              bevelSegments: 10
+            }
+          ).rotateX(-Math.PI * 0.5).rotateY(Math.PI * 0.25).translate(0, -1, 0);
+          let m = new THREE.MeshStandardMaterial({
+            color: 0x545F54,
+            metalness: 0.6,
+            roughness: 0.4,
+            transparent: true,
+            opacity: 0.25
+          });
+          
+          super(g, m);
+        }
+      }
+      let hollySurface = new HollySurface();
+      hollySurface.position.set(0, -1.5, 0);
+      scene.add(hollySurface);
+
+      // Camera controls
+      let controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.enablePan = false;
+      controls.minDistance = 5;
+      controls.maxDistance = 10;
+      controls.maxPolarAngle = Math.PI * 0.45;
+      controls.autoRotate = true;
+
+      // Animate
+      let clock = new THREE.Clock();
+      let t = 0;
+      renderer.setAnimationLoop(() => {
+        let dt = clock.getDelta();
+        t += dt;
+        controls.update();
+        boxOfLight.update(t);
+        postprocessing.render();
+      });
+
+      window.addEventListener("resize", () => {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+      });
+    </script>
+    <script>
+      // Drag and drop for upload area
+      const uploadArea = document.getElementById('upload-area');
+      const fileInput = document.getElementById('file-input');
+      const uploadLabel = document.getElementById('upload-label');
+
+      uploadArea.addEventListener('click', () => fileInput.click());
+
+      uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadArea.classList.add('dragover');
+      });
+      uploadArea.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          uploadArea.classList.remove('dragover');
+      });
+      uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadArea.classList.remove('dragover');
+          if (e.dataTransfer.files.length) {
+              fileInput.files = e.dataTransfer.files;
+              uploadLabel.innerText = e.dataTransfer.files[0].name;
+          }
+      });
+      fileInput.addEventListener('change', (e) => {
+          if (fileInput.files.length) {
+              uploadLabel.innerText = fileInput.files[0].name;
+          }
+      });
+    </script>
+    {% if result %}
+<script>
+  // Parse percent from Flask result string
+  let resultText1 = `{{ result }}`;
+  let predMatch1 = resultText1.match(/Confidence: ([\d\.]+)%/i);
+  let percent1 = predMatch1 ? parseFloat(predMatch1[1]) / 100 : 0.0;
+
+  // D3 Neon Meter
+  var width = 135,
+      height = 135,
+      twoPi = 2 * Math.PI,
+      progress = 0,
+      formatPercent = d3.format(".0%");
+
+  var arc = d3.svg.arc()
+      .startAngle(0)
+      .innerRadius(52)
+      .outerRadius(66);
+
+  var svg = d3.select("#docsChart").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+    .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+  var defs = svg.append("defs");
+  var gradient = defs.append("linearGradient")
+      .attr("id", "neon-gradient")
+      .attr("x1", "0%").attr("y1", "0%")
+      .attr("x2", "100%").attr("y2", "0%");
+  gradient.append("stop").attr("offset", "0%").attr("stop-color", "#00e6a8");
+  gradient.append("stop").attr("offset", "100%").attr("stop-color", "#007cf0");
+
+  var meter = svg.append("g")
+      .attr("class", "funds-allocated-meter");
+
+  meter.append("path")
+      .attr("class", "background")
+      .attr("d", arc.endAngle(twoPi));
+
+  var foreground = meter.append("path")
+      .attr("class", "foreground");
+
+  var percentComplete = meter.append("text")
+      .attr("text-anchor", "middle")
+      .attr("class", "percent-complete")
+      .attr("dy", "0em");
+
+  var description = meter.append("text")
+      .attr("text-anchor", "middle")
+      .attr("class", "description")
+      .attr("dy", "2.3em")
+      .text("Confidence");
+
+  var i = d3.interpolate(progress, percent1);
+
+   d3.transition().duration(1000).tween("progress", function() {
+    return function(t) {
+      progress = i(t);
+      foreground.attr("d", arc.endAngle(twoPi * progress));
+      percentComplete.text(formatPercent(progress));
+    };
+  });
+</script>
+{% endif %}
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+</body>
+</html>
